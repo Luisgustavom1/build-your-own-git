@@ -12,5 +12,5 @@ build:
 init: build
 	./playground/mygit init
 
-cat-file: init build
-	./playground/mygit cat-file $(hash)
+cat-file: build
+	./playground/mygit cat-file -$(flag) $(hash)
