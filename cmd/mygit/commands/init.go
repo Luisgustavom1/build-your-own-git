@@ -18,5 +18,10 @@ func Init() {
 		fmt.Fprintf(os.Stderr, "Error writing file: %s\n", err)
 	}
 
-	fmt.Println("Initialized empty Git repository in /.git")
+	wd, err := os.Getwd()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error getting current directory: %s\n", err)
+	}
+
+	fmt.Println("Initialized empty Git repository in", wd+"/.git/")
 }
