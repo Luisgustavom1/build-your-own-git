@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"path"
 
 	"github.com/codecrafters-io/git-starter-go/cmd/mygit/commands"
 )
@@ -14,16 +13,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	e, err := os.Executable()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	executableDir := path.Dir(e)
-
 	switch command := os.Args[1]; command {
 	case "init":
-		commands.Init(executableDir)
+		commands.Init()
 	case "cat-file":
 		commands.CatFile(os.Args)
 	default:

@@ -6,9 +6,9 @@ import (
 	"path"
 )
 
-func Init(executableDir string) {
+func Init() {
 	for _, dir := range []string{".git", ".git/objects", ".git/refs"} {
-		if err := os.MkdirAll(path.Join(executableDir, dir), 0755); err != nil {
+		if err := os.MkdirAll(path.Join(dir), 0755); err != nil {
 			fmt.Fprintf(os.Stderr, "Error creating directory: %s\n", err)
 		}
 	}
@@ -18,5 +18,5 @@ func Init(executableDir string) {
 		fmt.Fprintf(os.Stderr, "Error writing file: %s\n", err)
 	}
 
-	fmt.Println("Initialized empty Git repository in", path.Join(executableDir, ".git"))
+	fmt.Println("Initialized empty Git repository in /.git")
 }
