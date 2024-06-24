@@ -6,3 +6,6 @@ init: build
 
 cat-file: build
 	./playground/mygit cat-file -$(flag) $(hash)
+
+hash-object: build
+	./playground/mygit hash-object -$(flag) $(file)
