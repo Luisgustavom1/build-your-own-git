@@ -15,7 +15,7 @@ func main() {
 
 	switch command := os.Args[1]; command {
 	case "init":
-		commands.Init()
+		commands.Init(os.Args)
 	case "cat-file":
 		commands.CatFile(os.Args)
 	case "hash-object":
