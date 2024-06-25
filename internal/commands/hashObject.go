@@ -12,7 +12,7 @@ import (
 
 func HashObject(args []string) {
 	if len(args) < 4 {
-		fmt.Fprintf(os.Stderr, "usage: mygit cat-file <object>\n")
+		fmt.Fprintf(os.Stderr, "usage: mygit hash-object <object>\n")
 		os.Exit(1)
 	}
 

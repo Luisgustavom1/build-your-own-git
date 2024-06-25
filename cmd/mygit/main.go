@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/codecrafters-io/git-starter-go/cmd/mygit/commands"
+	"github.com/codecrafters-io/git-starter-go/internal/commands"
 )
 
 func main() {
