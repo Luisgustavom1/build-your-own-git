@@ -16,27 +16,27 @@ type ObjectBlob struct {
 	data  string
 }
 
-func CatFile(args []string) {
+func CatFile(args []string) error {
 	if len(args) < 3 {
-		fmt.Fprintf(os.Stderr, "usage: mygit cat-file <object>\n")
-		os.Exit(1)
+		return fmt.Errorf("usage: mygit cat-file <object>\n")
 	}
 
 	flag := args[2]
 	object := args[3]
 
 	if object == "" {
-		fmt.Fprintf(os.Stderr, "usage: mygit cat-file <object>\n")
-		return
+		return fmt.Errorf("usage: mygit cat-file <object>\n")
 	}
 
 	content, err := readObjectContent(object)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading object -> %s\n", err)
-		os.Exit(1)
+		return fmt.Errorf("Error reading object -> %s\n", err)
 	}
 
-	blob := uncompressObjectContent(content)
+	blob, err := uncompressObjectContent(content)
+	if err != nil {
+		return fmt.Errorf("Error decompressing object -> %s\n", err)
+	}
 
 	objBlob := parseObjectBlob(blob)
 
@@ -48,27 +48,27 @@ func CatFile(args []string) {
 	case "-p":
 		fmt.Print(objBlob.data)
 	default:
-		fmt.Fprintf(os.Stderr, "Unknown flag %s\n", flag)
-		os.Exit(1)
+		return fmt.Errorf("Unknown flag %s\n", flag)
 	}
+
+	return nil
 }
 
 func readObjectContent(object string) ([]byte, error) {
 	return os.ReadFile(path.Join(".git/objects", object[:2], object[2:]))
 }
 
-func uncompressObjectContent(content []byte) string {
+func uncompressObjectContent(content []byte) (string, error) {
 	buff := bytes.NewBuffer([]byte(content))
 	r, err := zlib.NewReader(buff)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error in decompressing object -> %s\n", err)
-		os.Exit(1)
+		return "", fmt.Errorf("Error in decompressing object -> %s\n", err)
 	}
 	defer r.Close()
 
 	blob := &bytes.Buffer{}
 	io.Copy(blob, r)
-	return blob.String()
+	return blob.String(), nil
 }
 
 func parseObjectBlob(blob string) ObjectBlob {

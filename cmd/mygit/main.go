@@ -13,15 +13,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	switch command := os.Args[1]; command {
-	case "init":
-		commands.Init(os.Args)
-	case "cat-file":
-		commands.CatFile(os.Args)
-	case "hash-object":
-		commands.HashObject(os.Args)
-	default:
-		fmt.Fprintf(os.Stderr, "Unknown command %s\n", command)
-		os.Exit(1)
-	}
+	commands.Orchestrator(os.Args)
 }
