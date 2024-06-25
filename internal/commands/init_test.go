@@ -1,11 +1,13 @@
 package commands_test
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/codecrafters-io/git-starter-go/internal/commands"
+	"github.com/stretchr/testify/require"
 )
 
 func TestInit(t *testing.T) {
@@ -26,19 +28,16 @@ func TestInit(t *testing.T) {
 		}
 
 		objectsDir := filepath.Join(gitDir, "objects")
-		if _, err := os.Stat(objectsDir); os.IsNotExist(err) {
-			t.Errorf("dir %s should be created", objectsDir)
-		}
+		_, err = os.Stat(objectsDir)
+		require.False(t, os.IsNotExist(err), fmt.Sprintf("dir %s should be created", objectsDir))
 
 		refsDir := filepath.Join(gitDir, "refs")
-		if _, err := os.Stat(refsDir); os.IsNotExist(err) {
-			t.Errorf("dir %s should be created", refsDir)
-		}
+		_, err = os.Stat(refsDir)
+		require.False(t, os.IsNotExist(err), fmt.Sprintf("dir %s should be created", refsDir))
 
 		headFilePath := filepath.Join(gitDir, "HEAD")
-		if _, err := os.Stat(headFilePath); os.IsNotExist(err) {
-			t.Errorf("file %s should be created", headFilePath)
-		}
+		_, err = os.Stat(headFilePath)
+		require.False(t, os.IsNotExist(err), fmt.Sprintf("file %s should be created", headFilePath))
 	})
 
 	t.Run("invalid arguments", func(t *testing.T) {
@@ -53,13 +52,11 @@ func TestInit(t *testing.T) {
 		commands.Init(args)
 
 		gitDir := filepath.Join(dir, ".git")
-		if _, err := os.Stat(gitDir); !os.IsNotExist(err) {
-			t.Errorf("Directory %s was created", gitDir)
-		}
+		_, err = os.Stat(gitDir)
+		require.True(t, os.IsNotExist(err), fmt.Sprintf("Directory %s was created", gitDir))
 
 		headFilePath := filepath.Join(gitDir, "HEAD")
-		if _, err := os.Stat(headFilePath); !os.IsNotExist(err) {
-			t.Errorf("File %s was created", headFilePath)
-		}
+		_, err = os.Stat(headFilePath)
+		require.True(t, os.IsNotExist(err), fmt.Sprintf("File %s was created", headFilePath))
 	})
 }
