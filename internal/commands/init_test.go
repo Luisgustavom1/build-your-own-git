@@ -20,7 +20,8 @@ func TestInit(t *testing.T) {
 
 		args := []string{"mygit", "init", dir}
 
-		commands.Init(args)
+		res, err := commands.Init(args)
+		require.NoError(t, err)
 
 		gitDir := filepath.Join(dir, ".git")
 		if _, err := os.Stat(gitDir); os.IsNotExist(err) {
@@ -38,6 +39,8 @@ func TestInit(t *testing.T) {
 		headFilePath := filepath.Join(gitDir, "HEAD")
 		_, err = os.Stat(headFilePath)
 		require.False(t, os.IsNotExist(err), fmt.Sprintf("file %s should be created", headFilePath))
+
+		require.Contains(t, res, "Initialized empty Git repository in")
 	})
 
 	t.Run("invalid arguments", func(t *testing.T) {

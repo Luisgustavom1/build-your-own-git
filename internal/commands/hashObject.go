@@ -10,9 +10,9 @@ import (
 	"path"
 )
 
-func HashObject(args []string) error {
+func HashObject(args []string) (string, error) {
 	if len(args) < 4 {
-		return fmt.Errorf("usage: mygit hash-object <object>\n")
+		return "", fmt.Errorf("usage: mygit hash-object <object>\n")
 	}
 
 	flag := args[2]
@@ -20,7 +20,7 @@ func HashObject(args []string) error {
 
 	data, err := os.ReadFile(file)
 	if err != nil {
-		return fmt.Errorf("Error reading file -> %s\n", err)
+		return "", fmt.Errorf("Error reading file -> %s\n", err)
 	}
 
 	switch flag {
@@ -33,7 +33,7 @@ func HashObject(args []string) error {
 
 		err := os.MkdirAll(objectPath, 0755)
 		if err != nil {
-			return fmt.Errorf("Error creating directory -> %s\n", err)
+			return "", fmt.Errorf("Error creating directory -> %s\n", err)
 		}
 
 		compressedBlob := bytes.Buffer{}
@@ -43,12 +43,11 @@ func HashObject(args []string) error {
 
 		err = os.WriteFile(path.Join(objectPath, objectFile), compressedBlob.Bytes(), 0644)
 		if err != nil {
-			return fmt.Errorf("Error writing file -> %s\n", err)
+			return "", fmt.Errorf("Error writing file -> %s\n", err)
 		}
-		fmt.Println(sha1_hash)
-	default:
-		return fmt.Errorf("Unknown flag %s\n", flag)
-	}
 
-	return nil
+		return fmt.Sprintln(sha1_hash), nil
+	default:
+		return "", fmt.Errorf("Unknown flag %s\n", flag)
+	}
 }

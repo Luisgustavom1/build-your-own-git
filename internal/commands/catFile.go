@@ -16,42 +16,42 @@ type ObjectBlob struct {
 	data  string
 }
 
-func CatFile(args []string) error {
+func CatFile(args []string) (string, error) {
 	if len(args) < 3 {
-		return fmt.Errorf("usage: mygit cat-file <object>\n")
+		return "", fmt.Errorf("usage: mygit cat-file <object>\n")
 	}
 
 	flag := args[2]
 	object := args[3]
 
 	if object == "" {
-		return fmt.Errorf("usage: mygit cat-file <object>\n")
+		return "", fmt.Errorf("usage: mygit cat-file <object>\n")
 	}
 
 	content, err := readObjectContent(object)
 	if err != nil {
-		return fmt.Errorf("Error reading object -> %s\n", err)
+		return "", fmt.Errorf("Error reading object -> %s\n", err)
 	}
 
 	blob, err := uncompressObjectContent(content)
 	if err != nil {
-		return fmt.Errorf("Error decompressing object -> %s\n", err)
+		return "", fmt.Errorf("Error decompressing object -> %s\n", err)
 	}
 
 	objBlob := parseObjectBlob(blob)
 
 	switch flag {
 	case "-t":
-		fmt.Println(objBlob.ttype)
+		return objBlob.ttype, nil
 	case "-s":
-		fmt.Println(objBlob.size)
+		return objBlob.size, nil
 	case "-p":
-		fmt.Print(objBlob.data)
+		return objBlob.data, nil
 	default:
-		return fmt.Errorf("Unknown flag %s\n", flag)
+		return "", fmt.Errorf("Unknown flag %s\n", flag)
 	}
 
-	return nil
+	return "", nil
 }
 
 func readObjectContent(object string) ([]byte, error) {
