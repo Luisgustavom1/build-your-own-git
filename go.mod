@@ -1,4 +1,4 @@
-module github.com/codecrafters-io/git-starter-go
+module github.com/Luisgustavom1/build-your-own-git
 
 go 1.22
 

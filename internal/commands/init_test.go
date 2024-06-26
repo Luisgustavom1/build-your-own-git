@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/codecrafters-io/git-starter-go/internal/commands"
+	"github.com/Luisgustavom1/build-your-own-git/internal/commands"
 	"github.com/stretchr/testify/require"
 )
 
@@ -44,7 +44,7 @@ func TestInit(t *testing.T) {
 	})
 
 	t.Run("invalid arguments", func(t *testing.T) {
-		dir, err := os.MkdirTemp("", "test")
+		dir, err := os.MkdirTemp(".", "test")
 		if err != nil {
 			t.Fatal(err)
 		}

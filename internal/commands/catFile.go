@@ -50,8 +50,6 @@ func CatFile(args []string) (string, error) {
 	default:
 		return "", fmt.Errorf("Unknown flag %s\n", flag)
 	}
-
-	return "", nil
 }
 
 func readObjectContent(object string) ([]byte, error) {
