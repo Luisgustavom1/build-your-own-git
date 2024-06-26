@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/Luisgustavom1/build-your-own-git/internal/commands"
+	test_utils "github.com/Luisgustavom1/build-your-own-git/internal/commands/tests/utils"
 	"github.com/stretchr/testify/require"
 )
 
@@ -41,19 +42,7 @@ func TestCatFile(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			dir, err := os.MkdirTemp(".", "test")
-			if err != nil {
-				t.Fatal(err)
-			}
-			defer func() {
-				os.Chdir("..")
-				os.RemoveAll(dir)
-			}()
-
-			err = os.Chdir(dir)
-			require.NoError(t, err)
-
-			_, err = commands.Init([]string{"mygit", "init"})
+			_, err := test_utils.GitInitSetup(t)
 			require.NoError(t, err)
 
 			objectPath := path.Join(".git/objects", tc.hashObj[:2])
