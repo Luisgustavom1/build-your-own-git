@@ -20,25 +20,45 @@ func TestCatFile(t *testing.T) {
 		expected string
 	}{
 		{
-			name:     "with flag -t",
+			name:     "object of blob type with flag -t",
 			flag:     "-t",
 			hashObj:  "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",
 			blobPath: "hash-object-hello-world",
 			expected: "blob",
 		},
 		{
-			name:     "with flag -s",
+			name:     "object of blob type with flag -s",
 			flag:     "-s",
 			hashObj:  "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",
 			blobPath: "hash-object-hello-world",
 			expected: "12",
 		},
 		{
-			name:     "with flag -p",
+			name:     "object of blob type with flag -p",
 			flag:     "-p",
 			hashObj:  "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",
 			blobPath: "hash-object-hello-world",
 			expected: "hello world",
+		},
+		{
+			name:     "object of tree type with flag -t",
+			flag:     "-t",
+			hashObj:  "d186cf338dd6da240c5c60a9f911dcd8e235b5c5",
+			blobPath: "commands-dir-tree-object",
+			expected: "tree",
+		},
+		{
+			name:     "object of tree type with flag -p",
+			flag:     "-p",
+			hashObj:  "d186cf338dd6da240c5c60a9f911dcd8e235b5c5",
+			blobPath: "commands-dir-tree-object",
+			expected: `
+				100644 blob b5b8fe9ad0f62425a834e50abf89b26f0a630902    catFile.go
+				100644 blob 60724c6ef7823c90f20ed816dbaaeafe13915a44    hashObject.go
+				100644 blob cd6154283fe7e083ba7baee6c4d06b786a4d36c4    init.go
+				100644 blob 705b3f7027d5577c396bc5ec6fe0acdac5f83229    init_test.go
+				100644 blob 23e9616617ff89d00f7599182d9b66d245f40ce1    orchestrator.go
+			`,
 		},
 	}
 	for _, tc := range testCases {
