@@ -1,6 +1,7 @@
 package commands_test
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"testing"
@@ -37,7 +38,7 @@ func TestCatFile(t *testing.T) {
 			flag:     "-p",
 			hashObj:  "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",
 			blobPath: "hash-object-hello-world",
-			expected: "hello world\n",
+			expected: "hello world",
 		},
 	}
 	for _, tc := range testCases {
@@ -49,7 +50,7 @@ func TestCatFile(t *testing.T) {
 			err = os.MkdirAll(objectPath, 0755)
 			require.NoError(t, err)
 
-			blob, err := os.ReadFile(path.Join("../tests/fixtures", tc.blobPath))
+			blob, err := os.ReadFile(path.Join("tests/fixtures", tc.blobPath))
 			require.NoError(t, err)
 			err = os.WriteFile(path.Join(objectPath, tc.hashObj[2:]), blob, 0644)
 			require.NoError(t, err)
@@ -57,7 +58,7 @@ func TestCatFile(t *testing.T) {
 			args := []string{"mygit", "cat-file", tc.flag, tc.hashObj}
 			res, err := commands.CatFile(args)
 			require.NoError(t, err)
-			require.Equal(t, tc.expected, res)
+			require.Equal(t, fmt.Sprintln(tc.expected), res)
 		})
 	}
 

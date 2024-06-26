@@ -42,9 +42,9 @@ func CatFile(args []string) (string, error) {
 
 	switch flag {
 	case "-t":
-		return objBlob.ttype, nil
+		return fmt.Sprintln(objBlob.ttype), nil
 	case "-s":
-		return objBlob.size, nil
+		return fmt.Sprintln(objBlob.size), nil
 	case "-p":
 		return objBlob.data, nil
 	default:

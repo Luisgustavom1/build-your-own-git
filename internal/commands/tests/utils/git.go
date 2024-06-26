@@ -8,17 +8,17 @@ import (
 )
 
 func GitInitSetup(t *testing.T) (dir string, err error) {
-	err = os.MkdirAll("tests/tmp", 0755)
+	err = os.MkdirAll("./tmp", 0755)
 	if err != nil {
 		return "", err
 	}
 
-	dir, err = os.MkdirTemp("tests/tmp", "test")
+	dir, err = os.MkdirTemp("./tmp", "test")
 	if err != nil {
 		return "", err
 	}
 	defer func() {
-		os.Chdir("..")
+		os.Chdir("../..")
 		os.RemoveAll(dir)
 	}()
 
