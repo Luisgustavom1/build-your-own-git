@@ -21,7 +21,7 @@ func TestHashObject(t *testing.T) {
 		{
 			name:         "with flag -w",
 			flag:         "-w",
-			filePath:     "../fixtures/hello-world.txt",
+			filePath:     "tests/fixtures/hello-world.txt",
 			expectedHash: "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",
 		},
 	}
@@ -30,7 +30,7 @@ func TestHashObject(t *testing.T) {
 			_, err := test_utils.GitInitSetup(t)
 			require.NoError(t, err)
 
-			args := []string{"mygit", "hash-object", tc.flag, tc.filePath}
+			args := []string{tc.flag, tc.filePath}
 
 			res, err := commands.HashObject(args)
 			require.NoError(t, err)
@@ -49,7 +49,7 @@ func TestHashObject(t *testing.T) {
 		}
 		defer os.RemoveAll(dir)
 
-		args := []string{"mygit", "hash-object"}
+		args := []string{"-p"}
 
 		_, err = commands.HashObject(args)
 		require.EqualErrorf(t, err, "usage: mygit hash-object <object>\n", "Invalid args")

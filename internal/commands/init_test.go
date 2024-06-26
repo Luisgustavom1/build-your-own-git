@@ -18,7 +18,7 @@ func TestInit(t *testing.T) {
 		}
 		defer os.RemoveAll(dir)
 
-		args := []string{"mygit", "init", dir}
+		args := []string{dir}
 
 		res, err := commands.Init(args)
 		require.NoError(t, err)

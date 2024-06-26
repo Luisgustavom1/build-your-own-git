@@ -8,7 +8,7 @@ import (
 func Orchestrator(args []string) {
 	var res string
 	var err error
-
+	args = args[2:]
 	switch command := args[1]; command {
 	case "init":
 		res, err = Init(args)

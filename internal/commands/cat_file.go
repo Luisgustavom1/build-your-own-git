@@ -17,12 +17,12 @@ type ObjectBlob struct {
 }
 
 func CatFile(args []string) (string, error) {
-	if len(args) < 3 {
+	if len(args) < 2 {
 		return "", fmt.Errorf("usage: mygit cat-file <object>\n")
 	}
 
-	flag := args[2]
-	object := args[3]
+	flag := args[0]
+	object := args[1]
 
 	if object == "" {
 		return "", fmt.Errorf("usage: mygit cat-file <object>\n")

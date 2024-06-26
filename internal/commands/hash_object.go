@@ -11,12 +11,12 @@ import (
 )
 
 func HashObject(args []string) (string, error) {
-	if len(args) < 4 {
+	if len(args) < 2 {
 		return "", fmt.Errorf("usage: mygit hash-object <object>\n")
 	}
 
-	flag := args[2]
-	file := args[3]
+	flag := args[0]
+	file := args[1]
 
 	data, err := os.ReadFile(file)
 	if err != nil {

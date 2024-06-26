@@ -8,8 +8,8 @@ import (
 
 func Init(args []string) (string, error) {
 	var parentDir string
-	if len(args) == 3 {
-		parentDir = args[2]
+	if len(args) == 1 {
+		parentDir = args[0]
 	}
 
 	for _, dir := range []string{".git", ".git/objects", ".git/refs"} {

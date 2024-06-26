@@ -75,7 +75,7 @@ func TestCatFile(t *testing.T) {
 			err = os.WriteFile(path.Join(objectPath, tc.hashObj[2:]), blob, 0644)
 			require.NoError(t, err)
 
-			args := []string{"mygit", "cat-file", tc.flag, tc.hashObj}
+			args := []string{tc.flag, tc.hashObj}
 			res, err := commands.CatFile(args)
 			require.NoError(t, err)
 			require.Equal(t, fmt.Sprintln(tc.expected), res)
@@ -89,7 +89,7 @@ func TestCatFile(t *testing.T) {
 		}
 		defer os.RemoveAll(dir)
 
-		args := []string{"mygit", "cat-file"}
+		args := []string{"-p"}
 
 		_, err = commands.CatFile(args)
 		require.EqualErrorf(t, err, "usage: mygit cat-file <object>\n", "Invalid args")
