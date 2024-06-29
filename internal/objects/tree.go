@@ -28,7 +28,11 @@ type TreeObject struct {
 	Children []TreeObjectNode `json:"children"`
 }
 
-func ParseTreeObject(object CommonObject) Object {
+type TreeStringOpts struct {
+	NameOnly bool
+}
+
+func ParseTreeObject(object CommonObject) TreeObject {
 	nodes := make([]TreeObjectNode, 0)
 	last := TreeObjectNode{}
 
@@ -102,10 +106,14 @@ func ParseTreeObjectContent(nodeStr string) TreeObjectNode {
 	return node
 }
 
-func (t TreeObject) String() string {
+func TreeObjToString(t TreeObject, opts TreeStringOpts) string {
 	b := strings.Builder{}
 	for _, content := range t.Children {
-		b.WriteString(fmt.Sprintf("%s %s %s    %s\n", content.Mode, content.Type, content.Hash, content.Name))
+		if opts.NameOnly {
+			b.WriteString(fmt.Sprintf("%s\n", content.Name))
+		} else {
+			b.WriteString(fmt.Sprintf("%s %s %s    %s\n", content.Mode, content.Type, content.Hash, content.Name))
+		}
 	}
 	return b.String()
 }

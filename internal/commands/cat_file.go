@@ -37,8 +37,11 @@ func CatFile(args []string) (string, error) {
 	case "-s":
 		return fmt.Sprintln(common.Size), nil
 	case "-p":
-		content := objects.ParseObjectContent(common)
-		return content.String(), nil
+		if common.Type == objects.Tree {
+			return parseAndPrintTree(common, objects.TreeStringOpts{}), nil
+		}
+		blob := objects.ParseBlobObject(common)
+		return objects.BlobObjToString(blob), nil
 	default:
 		return "", fmt.Errorf("Unknown flag %s\n", flag)
 	}

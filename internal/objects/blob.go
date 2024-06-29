@@ -5,12 +5,12 @@ type BlobObject struct {
 	data string
 }
 
-func ParseBlobObject(object CommonObject) Object {
+func ParseBlobObject(object CommonObject) BlobObject {
 	blob := BlobObject{CommonObject: object}
 	blob.data = object.Content
 	return blob
 }
 
-func (b BlobObject) String() string {
+func BlobObjToString(b BlobObject) string {
 	return b.data
 }

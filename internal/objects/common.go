@@ -35,14 +35,3 @@ func ParseCommonObject(blob string) CommonObject {
 
 	return c
 }
-
-func ParseObjectContent(object CommonObject) Object {
-	switch object.Type {
-	case Blob:
-		return ParseBlobObject(object)
-	case Tree:
-		return ParseTreeObject(object)
-	default:
-		return nil
-	}
-}

@@ -28,7 +28,6 @@ func TestLsTree(t *testing.T) {
 	}{
 		{
 			name:     "ls-tree with valid tree",
-			flag:     "-p",
 			hashObj:  "d186cf338dd6da240c5c60a9f911dcd8e235b5c5",
 			blobPath: "commands-dir-tree-object",
 			expectedLines: []string{
@@ -37,6 +36,19 @@ func TestLsTree(t *testing.T) {
 				"100644 blob cd6154283fe7e083ba7baee6c4d06b786a4d36c4    init.go",
 				"100644 blob 705b3f7027d5577c396bc5ec6fe0acdac5f83229    init_test.go",
 				"100644 blob 23e9616617ff89d00f7599182d9b66d245f40ce1    orchestrator.go",
+			},
+		},
+		{
+			name:     "ls-tree with --name-only flag",
+			flag:     "--name-only",
+			hashObj:  "d186cf338dd6da240c5c60a9f911dcd8e235b5c5",
+			blobPath: "commands-dir-tree-object",
+			expectedLines: []string{
+				"catFile.go",
+				"hashObject.go",
+				"init.go",
+				"init_test.go",
+				"orchestrator.go",
 			},
 		},
 	}
@@ -55,7 +67,7 @@ func TestLsTree(t *testing.T) {
 			require.NoError(t, err)
 
 			args := []string{tc.flag, tc.hashObj}
-			res, err := commands.CatFile(args)
+			res, err := commands.LsTree(args)
 			require.NoError(t, err)
 			require.Equal(t, formatTreeChildren(tc.expectedLines), res)
 		})
