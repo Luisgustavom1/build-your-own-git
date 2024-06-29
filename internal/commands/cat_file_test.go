@@ -1,7 +1,6 @@
 package commands_test
 
 import (
-	"fmt"
 	"os"
 	"path"
 	"testing"
@@ -24,42 +23,42 @@ func TestCatFile(t *testing.T) {
 			flag:              "-t",
 			object:            "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",
 			objectContentPath: "hash-object-hello-world",
-			expected:          "blob",
+			expected:          "blob\n",
 		},
 		{
 			name:              "object of blob type with flag -s",
 			flag:              "-s",
 			object:            "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",
 			objectContentPath: "hash-object-hello-world",
-			expected:          "12",
+			expected:          "12\n",
 		},
 		{
 			name:              "object of blob type with flag -p",
 			flag:              "-p",
 			object:            "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",
 			objectContentPath: "hash-object-hello-world",
-			expected:          "hello world",
+			expected:          "hello world\n",
 		},
 		{
 			name:              "object of tree type with flag -t",
 			flag:              "-t",
 			object:            "d186cf338dd6da240c5c60a9f911dcd8e235b5c5",
 			objectContentPath: "commands-dir-tree-object",
-			expected:          "tree",
+			expected:          "tree\n",
 		},
-		// {
-		// 	name:              "object of tree type with flag -p",
-		// 	flag:              "-p",
-		// 	object:            "d186cf338dd6da240c5c60a9f911dcd8e235b5c5",
-		// 	objectContentPath: "commands-dir-tree-object",
-		// 	expected: `
-		// 		100644 blob b5b8fe9ad0f62425a834e50abf89b26f0a630902    catFile.go
-		// 		100644 blob 60724c6ef7823c90f20ed816dbaaeafe13915a44    hashObject.go
-		// 		100644 blob cd6154283fe7e083ba7baee6c4d06b786a4d36c4    init.go
-		// 		100644 blob 705b3f7027d5577c396bc5ec6fe0acdac5f83229    init_test.go
-		// 		100644 blob 23e9616617ff89d00f7599182d9b66d245f40ce1    orchestrator.go
-		// 	`,
-		// },
+		{
+			name:              "object of tree type with flag -p",
+			flag:              "-p",
+			object:            "d186cf338dd6da240c5c60a9f911dcd8e235b5c5",
+			objectContentPath: "commands-dir-tree-object",
+			expected: formatTreeChildren([]string{
+				"100644 blob b5b8fe9ad0f62425a834e50abf89b26f0a630902    catFile.go",
+				"100644 blob 60724c6ef7823c90f20ed816dbaaeafe13915a44    hashObject.go",
+				"100644 blob cd6154283fe7e083ba7baee6c4d06b786a4d36c4    init.go",
+				"100644 blob 705b3f7027d5577c396bc5ec6fe0acdac5f83229    init_test.go",
+				"100644 blob 23e9616617ff89d00f7599182d9b66d245f40ce1    orchestrator.go",
+			}),
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -78,7 +77,7 @@ func TestCatFile(t *testing.T) {
 			args := []string{tc.flag, tc.object}
 			res, err := commands.CatFile(args)
 			require.NoError(t, err)
-			require.Equal(t, fmt.Sprintln(tc.expected), res)
+			require.Equal(t, tc.expected, res)
 		})
 	}
 

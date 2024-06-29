@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func formatNodeContentsLine(strs []string) string {
+func formatTreeChildren(strs []string) string {
 	var res string
 	for _, s := range strs {
 		res += s + "\n"
@@ -57,7 +57,7 @@ func TestLsTree(t *testing.T) {
 			args := []string{tc.flag, tc.hashObj}
 			res, err := commands.CatFile(args)
 			require.NoError(t, err)
-			require.Equal(t, formatNodeContentsLine(tc.expectedLines), res)
+			require.Equal(t, formatTreeChildren(tc.expectedLines), res)
 		})
 	}
 
