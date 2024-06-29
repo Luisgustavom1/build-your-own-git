@@ -2,6 +2,8 @@ package commands
 
 import (
 	"fmt"
+
+	"github.com/Luisgustavom1/build-your-own-git/internal/objects"
 )
 
 func LsTree(args []string) (string, error) {
@@ -21,13 +23,13 @@ func LsTree(args []string) (string, error) {
 		return "", fmt.Errorf("Error decompressing object -> %s\n", err)
 	}
 
-	common := parseCommonObject(data)
+	common := objects.ParseCommonObject(data)
 
-	if common.ttype != Tree {
+	if common.Type != objects.Tree {
 		return "", fmt.Errorf("not a tree object\n")
 	}
 
-	tree := parseTreeObject(common)
+	tree := objects.ParseTreeObject(common)
 
 	return tree.String(), nil
 }
