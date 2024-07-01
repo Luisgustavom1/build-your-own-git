@@ -18,34 +18,34 @@ func TestCatFile(t *testing.T) {
 		objectContentPath string
 		expected          string
 	}{
-		// {
-		// 	name:              "object of blob type with flag -t",
-		// 	flag:              "-t",
-		// 	object:            "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",
-		// 	objectContentPath: "hash-object-hello-world",
-		// 	expected:          "blob\n",
-		// },
-		// {
-		// 	name:              "object of blob type with flag -s",
-		// 	flag:              "-s",
-		// 	object:            "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",
-		// 	objectContentPath: "hash-object-hello-world",
-		// 	expected:          "12\n",
-		// },
-		// {
-		// 	name:              "object of blob type with flag -p",
-		// 	flag:              "-p",
-		// 	object:            "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",
-		// 	objectContentPath: "hash-object-hello-world",
-		// 	expected:          "hello world\n",
-		// },
-		// {
-		// 	name:              "object of tree type with flag -t",
-		// 	flag:              "-t",
-		// 	object:            "d186cf338dd6da240c5c60a9f911dcd8e235b5c5",
-		// 	objectContentPath: "commands-dir-tree-object",
-		// 	expected:          "tree\n",
-		// },
+		{
+			name:              "object of blob type with flag -t",
+			flag:              "-t",
+			object:            "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",
+			objectContentPath: "hash-object-hello-world",
+			expected:          "blob\n",
+		},
+		{
+			name:              "object of blob type with flag -s",
+			flag:              "-s",
+			object:            "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",
+			objectContentPath: "hash-object-hello-world",
+			expected:          "12\n",
+		},
+		{
+			name:              "object of blob type with flag -p",
+			flag:              "-p",
+			object:            "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",
+			objectContentPath: "hash-object-hello-world",
+			expected:          "hello world\n",
+		},
+		{
+			name:              "object of tree type with flag -t",
+			flag:              "-t",
+			object:            "d186cf338dd6da240c5c60a9f911dcd8e235b5c5",
+			objectContentPath: "commands-dir-tree-object",
+			expected:          "tree\n",
+		},
 		{
 			name:              "object of tree type",
 			flag:              "-p",
