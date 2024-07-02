@@ -17,10 +17,6 @@ func GitInitSetup(t *testing.T) (dir string, err error) {
 	if err != nil {
 		return "", err
 	}
-	defer func() {
-		os.Chdir("../..")
-		os.RemoveAll(dir)
-	}()
 
 	err = os.Chdir(dir)
 	if err != nil {

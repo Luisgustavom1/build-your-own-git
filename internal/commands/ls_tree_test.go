@@ -54,14 +54,18 @@ func TestLsTree(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			_, err := test_utils.GitInitSetup(t)
+			dir, err := test_utils.GitInitSetup(t)
+			defer func() {
+				os.Chdir("../..")
+				os.RemoveAll(dir)
+			}()
 			require.NoError(t, err)
 
 			objectPath := path.Join(".git/objects", tc.hashObj[:2])
 			err = os.MkdirAll(objectPath, 0755)
 			require.NoError(t, err)
 
-			blob, err := os.ReadFile(path.Join("tests/fixtures", tc.blobPath))
+			blob, err := os.ReadFile(path.Join("../../tests/fixtures", tc.blobPath))
 			require.NoError(t, err)
 			err = os.WriteFile(path.Join(objectPath, tc.hashObj[2:]), blob, 0644)
 			require.NoError(t, err)

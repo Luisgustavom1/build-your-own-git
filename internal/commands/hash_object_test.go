@@ -21,13 +21,17 @@ func TestHashObject(t *testing.T) {
 		{
 			name:         "with flag -w",
 			flag:         "-w",
-			filePath:     "tests/fixtures/hello-world.txt",
+			filePath:     "../../tests/fixtures/hello-world.txt",
 			expectedHash: "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			_, err := test_utils.GitInitSetup(t)
+			dir, err := test_utils.GitInitSetup(t)
+			defer func() {
+				os.Chdir("../..")
+				os.RemoveAll(dir)
+			}()
 			require.NoError(t, err)
 
 			args := []string{tc.flag, tc.filePath}
