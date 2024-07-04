@@ -8,14 +8,17 @@ import (
 func Orchestrator(args []string) {
 	var res string
 	var err error
+	command := args[1]
 	args = args[2:]
-	switch command := args[1]; command {
+	switch command {
 	case "init":
 		res, err = Init(args)
 	case "cat-file":
 		res, err = CatFile(args)
 	case "hash-object":
 		res, err = HashObject(args)
+	case "ls-tree":
+		res, err = LsTree(args)
 	default:
 		err = fmt.Errorf("Unknown command %s\n", command)
 	}
