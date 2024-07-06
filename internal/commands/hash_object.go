@@ -18,20 +18,19 @@ func HashObject(args []string) (string, error) {
 	flag := args[0]
 	file := args[1]
 
-	data, err := os.ReadFile(file)
-	if err != nil {
-		return "", fmt.Errorf("Error reading file -> %s\n", err)
-	}
-
 	switch flag {
 	case "-w":
-		blob := fmt.Sprintf("blob %d\000%s", len(data), data)
-		h := sha1.Sum([]byte(blob))
-		sha1_hash := hex.EncodeToString(h[:])
+		data, err := os.ReadFile(file)
+		if err != nil {
+			return "", fmt.Errorf("Error reading file -> %s\n", err)
+		}
+
+		// TODO: move this logic to object package
+		sha1_hash, blob := createBlobSha1Hash(data)
 		objectPath := path.Join(".git/objects", string(sha1_hash[:2]))
 		objectFile := sha1_hash[2:]
 
-		err := os.MkdirAll(objectPath, 0755)
+		err = os.MkdirAll(objectPath, 0755)
 		if err != nil {
 			return "", fmt.Errorf("Error creating directory -> %s\n", err)
 		}
@@ -50,4 +49,11 @@ func HashObject(args []string) (string, error) {
 	default:
 		return "", fmt.Errorf("Unknown flag %s\n", flag)
 	}
+}
+
+func createBlobSha1Hash(data []byte) (hash string, blob string) {
+	blob = fmt.Sprintf("blob %d\000%s", len(data), data)
+	h := sha1.Sum([]byte(blob))
+	hash = hex.EncodeToString(h[:])
+	return hash, blob
 }
