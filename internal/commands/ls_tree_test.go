@@ -31,6 +31,7 @@ func TestLsTree(t *testing.T) {
 			hashObj:  "d186cf338dd6da240c5c60a9f911dcd8e235b5c5",
 			blobPath: "commands-dir-tree-object",
 			expectedLines: []string{
+				// FIXME: dir mode is wrong
 				"100644 blob b5b8fe9ad0f62425a834e50abf89b26f0a630902    catFile.go",
 				"100644 blob 60724c6ef7823c90f20ed816dbaaeafe13915a44    hashObject.go",
 				"100644 blob cd6154283fe7e083ba7baee6c4d06b786a4d36c4    init.go",
