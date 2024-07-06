@@ -1,6 +1,9 @@
 package objects
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 type ObjectType string
 
@@ -13,7 +16,7 @@ const (
 
 type CommonObject struct {
 	Type    ObjectType `json:"type"`
-	Size    string     `json:"size"`
+	Size    int        `json:"size"`
 	Content string     `json:"content"`
 }
 
@@ -29,7 +32,12 @@ func ParseCommonObject(blob string) CommonObject {
 
 	blob = blob[typeIdx+1:]
 	idx := strings.Index(blob, "\x00")
-	c.Size = blob[:idx]
+
+	size, err := strconv.Atoi(blob[:idx])
+	if err != nil {
+		panic(err)
+	}
+	c.Size = size
 
 	c.Content = blob[idx+1:]
 
