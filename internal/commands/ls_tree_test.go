@@ -31,12 +31,20 @@ func TestLsTree(t *testing.T) {
 			hashObj:  "d186cf338dd6da240c5c60a9f911dcd8e235b5c5",
 			blobPath: "commands-dir-tree-object",
 			expectedLines: []string{
-				// FIXME: dir mode is wrong
 				"100644 blob b5b8fe9ad0f62425a834e50abf89b26f0a630902    catFile.go",
 				"100644 blob 60724c6ef7823c90f20ed816dbaaeafe13915a44    hashObject.go",
 				"100644 blob cd6154283fe7e083ba7baee6c4d06b786a4d36c4    init.go",
 				"100644 blob 705b3f7027d5577c396bc5ec6fe0acdac5f83229    init_test.go",
 				"100644 blob 23e9616617ff89d00f7599182d9b66d245f40ce1    orchestrator.go",
+			},
+		},
+		{
+			name:     "ls-tree with directory objects mode",
+			hashObj:  "690df8878ea1b471a8ccc69a038ededee0e50cfb",
+			blobPath: "simple-tree-object",
+			expectedLines: []string{
+				"040000 tree 6e437260f9b708786b51818448bda9f7fa5fe63b    commands",
+				"100644 blob c332e47f89fedd3636945af3942985d1371afe22    main.go",
 			},
 		},
 		{

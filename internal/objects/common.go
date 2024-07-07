@@ -27,11 +27,11 @@ type Object interface {
 func ParseCommonObject(blob string) CommonObject {
 	c := CommonObject{}
 
-	typeIdx := strings.Index(blob, " ")
+	typeIdx := strings.IndexByte(blob, ' ')
 	c.Type = ObjectType(blob[:typeIdx])
 
 	blob = blob[typeIdx+1:]
-	idx := strings.Index(blob, "\x00")
+	idx := strings.IndexByte(blob, '\x00')
 
 	size, err := strconv.Atoi(blob[:idx])
 	if err != nil {
