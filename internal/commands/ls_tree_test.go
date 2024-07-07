@@ -40,11 +40,12 @@ func TestLsTree(t *testing.T) {
 		},
 		{
 			name:     "ls-tree with directory objects mode",
-			hashObj:  "690df8878ea1b471a8ccc69a038ededee0e50cfb",
+			hashObj:  "e6c55e07165517dad132ad455f6a8093d11512f0",
 			blobPath: "simple-tree-object",
 			expectedLines: []string{
-				"040000 tree 6e437260f9b708786b51818448bda9f7fa5fe63b    commands",
-				"100644 blob c332e47f89fedd3636945af3942985d1371afe22    main.go",
+				"040000 tree 99eb3cf514b0ae57271b15a86302b6e25b7f9493    test_dir_1",
+				"040000 tree 0ef13a30a953dabfb813a0e9b24bb17dd6fa3ed9    test_dir_2",
+				"100644 blob 95d09f2b10159347eece71399a7e2e907ea3df4f    test_file_1.txt",
 			},
 		},
 		{

@@ -13,7 +13,7 @@ const (
 	RegularFileMode    = "100644"
 	ExecutableFileMode = "100755"
 	SymbolicLinkMode   = "120000"
-	DirectoryMode      = "040000"
+	DirectoryMode      = "40000"
 )
 
 type TreeObjectNode struct {
@@ -44,7 +44,7 @@ func ParseTreeObject(object CommonObject) TreeObject {
 		// <mode> <name>\0<20_byte_sha>
 		str := object.Content[idx]
 		if string(str) == " " {
-			last.Value.Mode = fmt.Sprintf("%06s", s.String())
+			last.Value.Mode = s.String()
 			s.Reset()
 
 			// we cover only this mode for now
@@ -95,7 +95,7 @@ func TreeObjToString(t TreeObject, opts TreeStringOpts) string {
 		if opts.NameOnly {
 			b.WriteString(fmt.Sprintf("%s\n", content.Value.Name))
 		} else {
-			b.WriteString(fmt.Sprintf("%s %s %s    %s\n", content.Value.Mode, content.Type, content.Value.Hash, content.Value.Name))
+			b.WriteString(fmt.Sprintf("%06s %s %s    %s\n", content.Value.Mode, content.Type, content.Value.Hash, content.Value.Name))
 		}
 	}
 	return b.String()
