@@ -1,12 +1,7 @@
 package commands
 
 import (
-	"bytes"
-	"compress/zlib"
 	"fmt"
-	"io"
-	"os"
-	"path"
 
 	"github.com/Luisgustavom1/build-your-own-git/internal/objects"
 )
@@ -17,19 +12,9 @@ func CatFile(args []string) (string, error) {
 	}
 
 	flag := args[0]
-	object := args[1]
+	objHash := args[1]
 
-	content, err := readObjectContent(object)
-	if err != nil {
-		return "", fmt.Errorf("Error reading object -> %s\n", err)
-	}
-
-	data, err := uncompressObjectContent(content)
-	if err != nil {
-		return "", fmt.Errorf("Error decompressing object -> %s\n", err)
-	}
-
-	common := objects.ParseCommonObject(data)
+	common := objects.NewCommonObjectFromHash(objHash)
 
 	switch flag {
 	case "-t":
@@ -38,28 +23,12 @@ func CatFile(args []string) (string, error) {
 		return fmt.Sprintln(common.Size), nil
 	case "-p":
 		if common.Type == objects.Tree {
-			return parseAndPrintTree(common, objects.TreeStringOpts{}), nil
+			tree := objects.ParseTreeObject(common)
+			return tree.String(objects.TreeStringOpts{}), nil
 		}
 		blob := objects.ParseBlobObject(common)
-		return objects.BlobObjToString(blob), nil
+		return blob.String(), nil
 	default:
 		return "", fmt.Errorf("Unknown flag %s\n", flag)
 	}
-}
-
-func readObjectContent(object string) ([]byte, error) {
-	return os.ReadFile(path.Join(".git/objects", object[:2], object[2:]))
-}
-
-func uncompressObjectContent(content []byte) (string, error) {
-	buff := bytes.NewBuffer([]byte(content))
-	r, err := zlib.NewReader(buff)
-	if err != nil {
-		return "", fmt.Errorf("Error in decompressing object -> %s\n", err)
-	}
-	defer r.Close()
-
-	blob := &bytes.Buffer{}
-	io.Copy(blob, r)
-	return blob.String(), nil
 }

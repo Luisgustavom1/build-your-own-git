@@ -30,7 +30,6 @@ func WriteTree(args []string) (string, error) {
 		return "", fmt.Errorf("Error generating tree object -> %s\n", err)
 	}
 
-	fmt.Println(tree)
 	hash := hex.EncodeToString([]byte(tree.Value.Hash))
 	return hash, nil
 }
@@ -66,11 +65,7 @@ func generateTreeObject(dirs []fs.DirEntry, wd string, tree *objects.TreeObject)
 			return fmt.Errorf("Error reading file -> %s\n", err)
 		}
 
-		hash, _ := createBlobSha1Hash(data)
-		hexHash, err := hex.DecodeString(hash)
-		if err != nil {
-			return fmt.Errorf("Error decoding hash -> %s\n", err)
-		}
+		blobObject := objects.NewBlobObject(data)
 
 		node.Type = objects.Blob
 		node.Size = len(data)
@@ -78,6 +73,11 @@ func generateTreeObject(dirs []fs.DirEntry, wd string, tree *objects.TreeObject)
 
 		node.Value.Mode = objects.RegularFileMode
 		node.Value.Name = dir.Name()
+
+		hexHash, err := hex.DecodeString(blobObject.Hash)
+		if err != nil {
+			return fmt.Errorf("Error decoding hash -> %s\n", err)
+		}
 		node.Value.Hash = string(hexHash)
 
 		tree.Children = append(tree.Children, node)

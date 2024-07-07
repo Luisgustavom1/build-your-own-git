@@ -89,7 +89,7 @@ func ParseTreeObject(object CommonObject) TreeObject {
 	}
 }
 
-func TreeObjToString(t TreeObject, opts TreeStringOpts) string {
+func (t TreeObject) String(opts TreeStringOpts) string {
 	b := strings.Builder{}
 	for _, content := range t.Children {
 		if opts.NameOnly {

@@ -1,13 +1,10 @@
 package commands
 
 import (
-	"bytes"
-	"compress/zlib"
-	"crypto/sha1"
-	"encoding/hex"
 	"fmt"
 	"os"
-	"path"
+
+	"github.com/Luisgustavom1/build-your-own-git/internal/objects"
 )
 
 func HashObject(args []string) (string, error) {
@@ -25,35 +22,14 @@ func HashObject(args []string) (string, error) {
 			return "", fmt.Errorf("Error reading file -> %s\n", err)
 		}
 
-		// TODO: move this logic to object package
-		sha1_hash, blob := createBlobSha1Hash(data)
-		objectPath := path.Join(".git/objects", string(sha1_hash[:2]))
-		objectFile := sha1_hash[2:]
-
-		err = os.MkdirAll(objectPath, 0755)
+		blobObject := objects.NewBlobObject(data)
+		err = blobObject.Save()
 		if err != nil {
-			return "", fmt.Errorf("Error creating directory -> %s\n", err)
+			return "", fmt.Errorf("Error saving object -> %s\n", err)
 		}
 
-		compressedBlob := bytes.Buffer{}
-		w := zlib.NewWriter(&compressedBlob)
-		w.Write([]byte(blob))
-		w.Close()
-
-		err = os.WriteFile(path.Join(objectPath, objectFile), compressedBlob.Bytes(), 0644)
-		if err != nil {
-			return "", fmt.Errorf("Error writing file -> %s\n", err)
-		}
-
-		return fmt.Sprintln(sha1_hash), nil
+		return fmt.Sprintln(blobObject.Hash), nil
 	default:
 		return "", fmt.Errorf("Unknown flag %s\n", flag)
 	}
-}
-
-func createBlobSha1Hash(data []byte) (hash string, blob string) {
-	blob = fmt.Sprintf("blob %d\000%s", len(data), data)
-	h := sha1.Sum([]byte(blob))
-	hash = hex.EncodeToString(h[:])
-	return hash, blob
 }
