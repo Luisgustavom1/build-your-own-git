@@ -24,6 +24,8 @@ type CommonObject struct {
 	Type    ObjectType `json:"type"`
 	Size    int        `json:"size"`
 	Content string     `json:"content"`
+	Data    string     `json:"data"`
+	Hash    string     `json:"hash"`
 }
 
 func NewCommonObjectFromHash(hash string) CommonObject {
@@ -41,7 +43,7 @@ func NewCommonObjectFromHash(hash string) CommonObject {
 }
 
 func ParseCommonObject(blob string) CommonObject {
-	c := CommonObject{}
+	c := CommonObject{Content: blob}
 
 	typeIdx := strings.IndexByte(blob, ' ')
 	c.Type = ObjectType(blob[:typeIdx])
@@ -55,7 +57,7 @@ func ParseCommonObject(blob string) CommonObject {
 	}
 	c.Size = size
 
-	c.Content = blob[idx+1:]
+	c.Data = blob[idx+1:]
 
 	return c
 }
@@ -75,4 +77,27 @@ func uncompressObjectContent(content []byte) (string, error) {
 	blob := &bytes.Buffer{}
 	io.Copy(blob, r)
 	return blob.String(), nil
+}
+
+func SaveObject(obj CommonObject) error {
+	sha1_hash := obj.Hash
+	objectPath := path.Join(".git/objects", string(sha1_hash[:2]))
+	objectFile := sha1_hash[2:]
+
+	err := os.MkdirAll(objectPath, 0755)
+	if err != nil {
+		return fmt.Errorf("Error creating directory -> %s\n", err)
+	}
+
+	compressedBlob := bytes.Buffer{}
+	w := zlib.NewWriter(&compressedBlob)
+	w.Write([]byte(obj.Content))
+	w.Close()
+
+	err = os.WriteFile(path.Join(objectPath, objectFile), compressedBlob.Bytes(), 0644)
+	if err != nil {
+		return fmt.Errorf("Error writing file -> %s\n", err)
+	}
+
+	return nil
 }

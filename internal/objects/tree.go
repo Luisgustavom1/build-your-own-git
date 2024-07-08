@@ -17,15 +17,14 @@ const (
 )
 
 type TreeObjectNode struct {
+	CommonObject
 	Mode string `json:"mode"`
 	Name string `json:"name"`
-	Hash string `json:"hash"`
 }
 
 type TreeObject struct {
-	CommonObject
 	Value    TreeObjectNode `json:"value"`
-	Children []TreeObject   `json:"children"`
+	Children []*TreeObject  `json:"children"`
 }
 
 type TreeStringOpts struct {
@@ -33,35 +32,35 @@ type TreeStringOpts struct {
 }
 
 func ParseTreeObject(object CommonObject) TreeObject {
-	nodes := make([]TreeObject, 0)
-	last := TreeObject{}
+	nodes := make([]*TreeObject, 0)
+	last := &TreeObject{}
 
 	idx := 0
 	s := strings.Builder{}
 
-	for idx < len(object.Content) {
+	for idx < len(object.Data) {
 		// <mode> <name>\0<20_byte_sha>
 		// <mode> <name>\0<20_byte_sha>
-		str := object.Content[idx]
+		str := object.Data[idx]
 		if string(str) == " " {
 			last.Value.Mode = s.String()
 			s.Reset()
 
 			// we cover only this mode for now
 			if last.Value.Mode == DirectoryMode {
-				last.Type = Tree
+				last.Value.Type = Tree
 			} else {
-				last.Type = Blob
+				last.Value.Type = Blob
 			}
 
-			nullIdx := strings.IndexByte(object.Content[idx:], '\x00')
+			nullIdx := strings.IndexByte(object.Data[idx:], '\x00')
 
-			name := object.Content[idx+1 : idx+nullIdx]
+			name := object.Data[idx+1 : idx+nullIdx]
 			last.Value.Name = name
 
 			idx += nullIdx + 1
 
-			reader := strings.NewReader(object.Content[idx:])
+			reader := strings.NewReader(object.Data[idx:])
 
 			hash := make([]byte, 20)
 			_, _ = io.ReadAtLeast(reader, hash, 20)
@@ -72,7 +71,7 @@ func ParseTreeObject(object CommonObject) TreeObject {
 			idx += 20
 
 			nodes = append(nodes, last)
-			last = TreeObject{}
+			last = &TreeObject{}
 			continue
 		}
 
@@ -84,8 +83,10 @@ func ParseTreeObject(object CommonObject) TreeObject {
 	}
 
 	return TreeObject{
-		CommonObject: object,
-		Children:     nodes,
+		Value: TreeObjectNode{
+			CommonObject: object,
+		},
+		Children: nodes,
 	}
 }
 
@@ -95,7 +96,7 @@ func (t TreeObject) String(opts TreeStringOpts) string {
 		if opts.NameOnly {
 			b.WriteString(fmt.Sprintf("%s\n", content.Value.Name))
 		} else {
-			b.WriteString(fmt.Sprintf("%06s %s %s    %s\n", content.Value.Mode, content.Type, content.Value.Hash, content.Value.Name))
+			b.WriteString(fmt.Sprintf("%06s %s %s    %s\n", content.Value.Mode, content.Value.Type, content.Value.Hash, content.Value.Name))
 		}
 	}
 	return b.String()
