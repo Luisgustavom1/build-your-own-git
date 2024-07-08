@@ -23,7 +23,7 @@ func HashObject(args []string) (string, error) {
 		}
 
 		blobObject := objects.NewBlobObject(data)
-		err = blobObject.Save()
+		err = objects.SaveObject(blobObject.CommonObject)
 		if err != nil {
 			return "", fmt.Errorf("Error saving object -> %s\n", err)
 		}
