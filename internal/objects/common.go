@@ -48,15 +48,14 @@ func ParseCommonObject(blob string) CommonObject {
 	typeIdx := strings.IndexByte(blob, ' ')
 	c.Type = ObjectType(blob[:typeIdx])
 
-	blob = blob[typeIdx+1:]
 	idx := strings.IndexByte(blob, '\x00')
 
-	size, err := strconv.Atoi(blob[:idx])
+	size, err := strconv.Atoi(blob[typeIdx+1 : idx])
 	if err != nil {
 		panic(err)
 	}
-	c.Size = size
 
+	c.Size = size
 	c.Data = blob[idx+1:]
 
 	return c

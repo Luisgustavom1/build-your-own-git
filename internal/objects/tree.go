@@ -75,7 +75,7 @@ func ParseTreeObject(object CommonObject) TreeObject {
 			continue
 		}
 
-		_, err := s.WriteString(string(str))
+		err := s.WriteByte(str)
 		if err != nil {
 			panic(err)
 		}
