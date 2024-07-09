@@ -12,7 +12,7 @@ import (
 )
 
 func setupCommitTreeFiles() error {
-	err := os.WriteFile("test_file_1.txt", []byte("hello world"), 0644)
+	err := os.WriteFile("test_file_1.txt", []byte("hello world\n"), 0644)
 	if err != nil {
 		return err
 	}
@@ -22,7 +22,7 @@ func setupCommitTreeFiles() error {
 		return err
 	}
 
-	err = os.WriteFile("test_dir_1/test_file_2.txt", []byte("hello world test_dir_1/test_file_2.txt"), 0644)
+	err = os.WriteFile("test_dir_1/test_file_2.txt", []byte("hello world test_dir_1/test_file_2.txt\n"), 0644)
 	if err != nil {
 		return err
 	}
@@ -55,11 +55,13 @@ func TestCommitTree(t *testing.T) {
 
 		res, err := commands.CatFile([]string{"-p", commitHash})
 		require.NoError(t, err)
-		require.Contains(t, res, `tree 7073a74d71d9b2018918475aa6077630182b8acf
-		author Author Name <author@example.com> 1720526831 -0300
-		committer Author Name <author@example.com> 1720526831 -0300
-		
-		my commit`)
+		require.Contains(t, res, test_utils.FormatTreeChildren([]string{
+			"tree 7073a74d71d9b2018918475aa6077630182b8acf",
+			"author Author Name <author@example.com> 1720526831 -0300",
+			"committer Author Name <author@example.com> 1720526831 -0300",
+			"",
+			"my commit",
+		}))
 	})
 }
 

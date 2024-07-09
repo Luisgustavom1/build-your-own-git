@@ -26,3 +26,11 @@ func GitInitSetup(t *testing.T) (dir string, err error) {
 	_, err = commands.Init([]string{"mygit", "init"})
 	return dir, err
 }
+
+func FormatTreeChildren(strs []string) string {
+	var res string
+	for _, s := range strs {
+		res += s + "\n"
+	}
+	return res
+}

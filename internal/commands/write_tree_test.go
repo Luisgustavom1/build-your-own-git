@@ -59,7 +59,7 @@ func TestWriteTree(t *testing.T) {
 		res, err = commands.LsTree([]string{expectedHash})
 		require.NoError(t, err)
 
-		tree := formatTreeChildren([]string{
+		tree := test_utils.FormatTreeChildren([]string{
 			"040000 tree 99eb3cf514b0ae57271b15a86302b6e25b7f9493    test_dir_1",
 			"040000 tree 0ef13a30a953dabfb813a0e9b24bb17dd6fa3ed9    test_dir_2",
 			"100644 blob 95d09f2b10159347eece71399a7e2e907ea3df4f    test_file_1.txt",

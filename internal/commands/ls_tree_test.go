@@ -10,14 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func formatTreeChildren(strs []string) string {
-	var res string
-	for _, s := range strs {
-		res += s + "\n"
-	}
-	return res
-}
-
 func TestLsTree(t *testing.T) {
 	testCases := []struct {
 		name          string
@@ -83,7 +75,7 @@ func TestLsTree(t *testing.T) {
 			args := []string{tc.flag, tc.hashObj}
 			res, err := commands.LsTree(args)
 			require.NoError(t, err)
-			require.Equal(t, formatTreeChildren(tc.expectedLines), res)
+			require.Equal(t, test_utils.FormatTreeChildren(tc.expectedLines), res)
 		})
 	}
 

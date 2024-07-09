@@ -51,7 +51,7 @@ func TestCatFile(t *testing.T) {
 			flag:              "-p",
 			object:            "d186cf338dd6da240c5c60a9f911dcd8e235b5c5",
 			objectContentPath: "simple-tree-object",
-			expected: formatTreeChildren([]string{
+			expected: test_utils.FormatTreeChildren([]string{
 				"100644 blob b5b8fe9ad0f62425a834e50abf89b26f0a630902    catFile.go",
 				"100644 blob 60724c6ef7823c90f20ed816dbaaeafe13915a44    hashObject.go",
 				"100644 blob cd6154283fe7e083ba7baee6c4d06b786a4d36c4    init.go",
@@ -64,7 +64,7 @@ func TestCatFile(t *testing.T) {
 			flag:              "-p",
 			object:            "1dbca800d8f275e8fdf3e86470f7b76d5b09c3d4",
 			objectContentPath: "simple-commit-object",
-			expected: formatTreeChildren([]string{
+			expected: test_utils.FormatTreeChildren([]string{
 				"tree 7073a74d71d9b2018918475aa6077630182b8acf",
 				"author Author Name <author@example.com> 1720526831 -0300",
 				"committer Author Name <author@example.com> 1720526831 -0300",
