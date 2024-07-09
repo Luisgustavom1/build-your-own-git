@@ -29,7 +29,7 @@ func TestLsTree(t *testing.T) {
 		{
 			name:     "ls-tree with valid tree",
 			hashObj:  "d186cf338dd6da240c5c60a9f911dcd8e235b5c5",
-			blobPath: "commands-dir-tree-object",
+			blobPath: "simple-tree-object",
 			expectedLines: []string{
 				"100644 blob b5b8fe9ad0f62425a834e50abf89b26f0a630902    catFile.go",
 				"100644 blob 60724c6ef7823c90f20ed816dbaaeafe13915a44    hashObject.go",
@@ -41,7 +41,7 @@ func TestLsTree(t *testing.T) {
 		{
 			name:     "ls-tree with directory objects mode",
 			hashObj:  "e6c55e07165517dad132ad455f6a8093d11512f0",
-			blobPath: "simple-tree-object",
+			blobPath: "simple-tree-object-with-dirs",
 			expectedLines: []string{
 				"040000 tree 99eb3cf514b0ae57271b15a86302b6e25b7f9493    test_dir_1",
 				"040000 tree 0ef13a30a953dabfb813a0e9b24bb17dd6fa3ed9    test_dir_2",
@@ -52,7 +52,7 @@ func TestLsTree(t *testing.T) {
 			name:     "ls-tree with --name-only flag",
 			flag:     "--name-only",
 			hashObj:  "d186cf338dd6da240c5c60a9f911dcd8e235b5c5",
-			blobPath: "commands-dir-tree-object",
+			blobPath: "simple-tree-object",
 			expectedLines: []string{
 				"catFile.go",
 				"hashObject.go",

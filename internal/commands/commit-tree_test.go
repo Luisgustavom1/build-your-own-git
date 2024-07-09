@@ -31,7 +31,7 @@ func setupCommitTreeFiles() error {
 }
 
 func TestCommitTree(t *testing.T) {
-	t.Run("create correctly write-tree", func(t *testing.T) {
+	t.Run("create correctly commit-tree", func(t *testing.T) {
 		dir, err := test_utils.GitInitSetup(t)
 		defer func() {
 			os.Chdir("../..")

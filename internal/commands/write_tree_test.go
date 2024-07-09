@@ -47,7 +47,7 @@ func TestWriteTree(t *testing.T) {
 		}()
 		require.NoError(t, err)
 
-		err = setupCommitTreeFiles()
+		err = setupTreeFiles()
 		require.NoError(t, err)
 
 		res, err := commands.WriteTree([]string{})
