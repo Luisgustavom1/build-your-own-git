@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// TODO: use some cli framework
 func Orchestrator(args []string) {
 	var res string
 	var err error
@@ -19,6 +20,8 @@ func Orchestrator(args []string) {
 		res, err = HashObject(args)
 	case "ls-tree":
 		res, err = LsTree(args)
+	case "commit-tree":
+		res, err = CommitTree(args)
 	default:
 		err = fmt.Errorf("Unknown command %s\n", command)
 	}
