@@ -23,13 +23,13 @@ func LsTree(args []string) (string, error) {
 		objHash = args[0]
 	}
 
-	common := objects.NewCommonObjectFromHash(objHash)
+	common := objects.NewObjectFromHash(objHash)
 
 	if common.Type != objects.Tree {
 		return "", fmt.Errorf("not a tree object\n")
 	}
 
-	tree := objects.ParseTreeObject(common)
+	tree := objects.NewTreeObject(common)
 
 	return tree.String(treeStringOpts), nil
 }

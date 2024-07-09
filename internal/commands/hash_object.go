@@ -22,8 +22,8 @@ func HashObject(args []string) (string, error) {
 			return "", fmt.Errorf("Error reading file -> %s\n", err)
 		}
 
-		blobObject := objects.NewBlobObject(data)
-		err = objects.SaveObject(blobObject.CommonObject)
+		blobObject := objects.NewBlobObjectFromData(data)
+		err = blobObject.Write()
 		if err != nil {
 			return "", fmt.Errorf("Error saving object -> %s\n", err)
 		}

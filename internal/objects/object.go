@@ -22,16 +22,24 @@ const (
 	Tag    ObjectType = "tag"
 )
 
-type CommonObject struct {
+type Object struct {
 	Type ObjectType `json:"type"`
 	Size int        `json:"size"`
 	Hash string     `json:"hash"`
-	// TODO: review this, maybe Data and Content can be merged
-	Data    string `json:"data"`
-	Content string `json:"content"`
+	Data string     `json:"data"`
 }
 
-func NewCommonObjectFromHash(hash string) CommonObject {
+func NewObject(ttype ObjectType, size int, data string) Object {
+	obj := Object{
+		Type: ttype,
+		Size: size,
+		Data: data,
+	}
+	obj.GenerateHash()
+	return obj
+}
+
+func NewObjectFromHash(hash string) Object {
 	content, err := RepoGetObject(hash)
 	if err != nil {
 		panic(fmt.Errorf("Error reading object -> %s\n", err))
@@ -42,35 +50,26 @@ func NewCommonObjectFromHash(hash string) CommonObject {
 		panic(fmt.Errorf("Error decompressing object -> %s\n", err))
 	}
 
-	return ParseCommonObject(data)
+	return NewObjectFromContent(data)
 }
 
-func ParseCommonObject(blob string) CommonObject {
-	c := CommonObject{Content: blob}
+func NewObjectFromContent(content string) Object {
+	c := Object{}
 
-	typeIdx := strings.IndexByte(blob, ' ')
-	c.Type = ObjectType(blob[:typeIdx])
+	typeIdx := strings.IndexByte(content, ' ')
+	c.Type = ObjectType(content[:typeIdx])
 
-	idx := strings.IndexByte(blob, '\x00')
+	idx := strings.IndexByte(content, '\x00')
 
-	size, err := strconv.Atoi(blob[typeIdx+1 : idx])
+	size, err := strconv.Atoi(content[typeIdx+1 : idx])
 	if err != nil {
 		panic(err)
 	}
 
 	c.Size = size
-	c.Data = blob[idx+1:]
+	c.Data = content[idx+1:]
 
 	return c
-}
-
-func RepoGetObject(name string) ([]byte, error) {
-	return os.ReadFile(path.Join(".git/objects", name[:2], name[2:]))
-}
-
-func RepoCheckObjectId(name string) bool {
-	_, err := os.Stat(path.Join(".git/objects", name[:2], name[2:]))
-	return err == nil
 }
 
 func uncompressObjectContent(content []byte) (string, error) {
@@ -86,7 +85,7 @@ func uncompressObjectContent(content []byte) (string, error) {
 	return blob.String(), nil
 }
 
-func SaveObject(obj CommonObject) error {
+func (obj *Object) Write() error {
 	if _, err := os.Stat(".git"); os.IsNotExist(err) {
 		return fmt.Errorf("fatal: not a git repository (or any of the parent directories): .git\n")
 	}
@@ -102,7 +101,7 @@ func SaveObject(obj CommonObject) error {
 
 	compressedBlob := bytes.Buffer{}
 	w := zlib.NewWriter(&compressedBlob)
-	w.Write([]byte(obj.Content))
+	w.Write([]byte(obj.GetContent()))
 	w.Close()
 
 	err = os.WriteFile(path.Join(objectPath, objectFile), compressedBlob.Bytes(), 0644)
@@ -113,8 +112,17 @@ func SaveObject(obj CommonObject) error {
 	return nil
 }
 
-func CreateObjectHash(blob []byte) string {
-	h := sha1.Sum(blob)
+func (o *Object) GenerateHash() string {
+	o.Hash = CreateObjectHash(o.GetContent())
+	return o.Hash
+}
+
+func (o *Object) GetContent() string {
+	return fmt.Sprintf("%s %d\x00%s", o.Type, o.Size, o.Data)
+}
+
+func CreateObjectHash(blob string) string {
+	h := sha1.Sum([]byte(blob))
 	hash := hex.EncodeToString(h[:])
 	return hash
 }

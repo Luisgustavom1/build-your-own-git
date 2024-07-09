@@ -1,28 +1,20 @@
 package objects
 
-import (
-	"fmt"
-)
-
 type BlobObject struct {
-	CommonObject
+	Object
 }
 
-func ParseBlobObject(object CommonObject) BlobObject {
-	blob := BlobObject{CommonObject: object}
+func NewBlobObject(object Object) BlobObject {
+	blob := BlobObject{Object: object}
 	return blob
 }
 
-func NewBlobObject(data []byte) BlobObject {
-	blob := fmt.Sprintf("blob %d\000%s", len(data), data)
-	hash := CreateObjectHash([]byte(blob))
+func NewBlobObjectFromData(data []byte) BlobObject {
+	object := NewObject(Blob, len(data), string(data))
 
-	common := CommonObject{Type: Blob, Content: blob, Size: len(data), Data: string(data), Hash: hash}
-	object := BlobObject{CommonObject: common}
-
-	return object
+	return BlobObject{Object: object}
 }
 
 func (b BlobObject) String() string {
-	return b.CommonObject.Data
+	return b.Object.Data
 }

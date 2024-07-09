@@ -1,7 +1,6 @@
 package objects
 
 import (
-	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
 	"io"
@@ -21,7 +20,7 @@ const (
 )
 
 type TreeObjectNode struct {
-	CommonObject
+	Object
 	Mode string `json:"mode"`
 	Name string `json:"name"`
 }
@@ -37,7 +36,7 @@ type TreeStringOpts struct {
 
 const GIT_FOLDER = ".git"
 
-func ParseTreeObject(object CommonObject) TreeObject {
+func NewTreeObject(object Object) TreeObject {
 	nodes := make([]*TreeObject, 0)
 	last := &TreeObject{}
 
@@ -90,13 +89,12 @@ func ParseTreeObject(object CommonObject) TreeObject {
 
 	return TreeObject{
 		Value: TreeObjectNode{
-			CommonObject: object,
+			Object: object,
 		},
 		Children: nodes,
 	}
 }
 
-// TODO: review and improve this code
 func GenerateTreeObjectFromDirs(dirs []fs.DirEntry, wd string, tree *TreeObject) error {
 	for _, dir := range dirs {
 		if dir.Name() == GIT_FOLDER {
@@ -128,27 +126,22 @@ func GenerateTreeObjectFromDirs(dirs []fs.DirEntry, wd string, tree *TreeObject)
 			return fmt.Errorf("Error reading file -> %s\n", err)
 		}
 
-		blobObject := NewBlobObject(data)
-
+		blobObject := NewBlobObjectFromData(data)
+		node.Value.Object = blobObject.Object
 		node.Value.Mode = RegularFileMode
 		node.Value.Name = dir.Name()
-		node.Value.CommonObject = blobObject.CommonObject
 
 		tree.Children = append(tree.Children, node)
 	}
 
-	s, c, h := createTreeSha1Hash(tree)
-	tree.Value.Mode = DirectoryMode
-	tree.Value.Type = Tree
-	tree.Value.Size = s
-	tree.Value.Content = c
-	tree.Value.Hash = h
 	tree.Value.Name = wd
+	tree.Value.Mode = DirectoryMode
+	createTreeObject(tree)
 
 	return nil
 }
 
-func createTreeSha1Hash(tree *TreeObject) (size int, content string, hash string) {
+func createTreeObject(tree *TreeObject) {
 	nodesContent := strings.Builder{}
 	for _, child := range tree.Children {
 		hexHash, err := hex.DecodeString(child.Value.Hash)
@@ -157,24 +150,18 @@ func createTreeSha1Hash(tree *TreeObject) (size int, content string, hash string
 		}
 		nodesContent.WriteString(fmt.Sprintf("%s %s\x00%s", child.Value.Mode, child.Value.Name, hexHash))
 	}
-	nodesContentStr := nodesContent.String()
-	size = len(nodesContentStr)
-
-	c := fmt.Sprintf("tree %d\000%s", size, nodesContentStr)
-	h := sha1.Sum([]byte(c))
-	hash = hex.EncodeToString(h[:])
-
-	return size, c, hash
+	data := nodesContent.String()
+	tree.Value.Object = NewObject(Tree, len(data), data)
 }
 
 func SaveNodes(tree TreeObject) error {
 	var err error
-	err = SaveObject(tree.Value.CommonObject)
+	err = tree.Value.Write()
 	if err != nil {
 		return fmt.Errorf("Error saving object %+v -> %s\n", tree.Value, err)
 	}
 	for _, child := range tree.Children {
-		err = SaveObject(child.Value.CommonObject)
+		err = child.Value.Write()
 		if err != nil {
 			return fmt.Errorf("Error saving object %+v -> %s\n", child.Value, err)
 		}
