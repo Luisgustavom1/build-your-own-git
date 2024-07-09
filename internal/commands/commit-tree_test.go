@@ -55,7 +55,7 @@ func TestCommitTree(t *testing.T) {
 
 		res, err := commands.CatFile([]string{"-p", commitHash})
 		require.NoError(t, err)
-		require.Contains(t, res, test_utils.FormatTreeChildren([]string{
+		require.Equal(t, res, test_utils.FormatTreeChildren([]string{
 			"tree 7073a74d71d9b2018918475aa6077630182b8acf",
 			"author Author Name <author@example.com> 1720526831 -0300",
 			"committer Author Name <author@example.com> 1720526831 -0300",
@@ -63,29 +63,64 @@ func TestCommitTree(t *testing.T) {
 			"my commit",
 		}))
 	})
-}
 
-func TestCommitTreeErrors(t *testing.T) {
-	testCases := []struct {
-		name     string
-		args     []string
-		expected string
-	}{
-		{
-			name:     "not a valid object name",
-			args:     []string{"1234"},
-			expected: "fatal: not a valid object name 1234",
-		},
-	}
+	t.Run("create correctly commit-tree with parent", func(t *testing.T) {
+		dir, err := test_utils.GitInitSetup(t)
+		defer func() {
+			os.Chdir("../..")
+			os.RemoveAll(dir)
+		}()
+		require.NoError(t, err)
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			res, err := commands.CommitTree(tc.args)
-			require.NotNil(t, err)
-			require.Equal(t, tc.expected, err.Error())
-			require.Equal(t, "", res)
-		})
-	}
+		err = setupCommitTreeFiles()
+		require.NoError(t, err)
+
+		treeHash, err := commands.WriteTree([]string{})
+		require.NoError(t, err)
+
+		loc := time.FixedZone("-0300", -10800)
+
+		// mock some second to first commit
+		mockedSeconds := int64(1720529056)
+		objects.Now = time.Unix(mockedSeconds, 0).In(loc)
+		parentHash, _ := commands.CommitTree([]string{treeHash, "-m", "my commit"})
+
+		// mock some second to second commit
+		mockedSeconds = int64(1720526831)
+		objects.Now = time.Unix(mockedSeconds, 0).In(loc)
+		commitHash, err := commands.CommitTree([]string{treeHash, "-p", parentHash, "-m", "my commit with parent"})
+		require.NoError(t, err)
+
+		res, err := commands.CatFile([]string{"-p", commitHash})
+		require.NoError(t, err)
+		require.Equal(t, res, test_utils.FormatTreeChildren([]string{
+			"tree 7073a74d71d9b2018918475aa6077630182b8acf",
+			"parent 7c3a066dd451d494a6c03218b666697c689430e2",
+			"author Author Name <author@example.com> 1720526831 -0300",
+			"committer Author Name <author@example.com> 1720526831 -0300",
+			"",
+			"my commit with parent",
+		}))
+	})
+
+	t.Run("error when parent hash not is a commit object", func(t *testing.T) {
+		dir, err := test_utils.GitInitSetup(t)
+		defer func() {
+			os.Chdir("../..")
+			os.RemoveAll(dir)
+		}()
+		require.NoError(t, err)
+
+		err = setupCommitTreeFiles()
+		require.NoError(t, err)
+
+		treeHash, err := commands.WriteTree([]string{})
+		require.NoError(t, err)
+
+		commitHash, err := commands.CommitTree([]string{treeHash, "-p", treeHash, "-m", "my commit"})
+		require.Equal(t, "", commitHash)
+		require.Equal(t, "fatal: "+treeHash+" is not a valid 'commit' object", err.Error())
+	})
 }
 
 func TestInvalidCommitTreeArgs(t *testing.T) {
@@ -93,6 +128,7 @@ func TestInvalidCommitTreeArgs(t *testing.T) {
 		name     string
 		args     []string
 		expected string
+		setup    func()
 	}{
 		{
 			name:     "commit tree with no flags",
@@ -114,10 +150,26 @@ func TestInvalidCommitTreeArgs(t *testing.T) {
 			args:     []string{"tree_hash", "-p", "parent_hash", "-m"},
 			expected: "No message provided",
 		},
+		{
+			name:     "not valid tree object",
+			args:     []string{"1234"},
+			expected: "fatal: not a valid object name 1234",
+		},
+		{
+			name: "not valid parent object",
+			args: []string{"valid_hash", "-p", "12345"},
+			setup: func() {
+				commands.SHOULD_VALIDATE_TREE_HASH = false
+			},
+			expected: "fatal: not a valid object name 12345",
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			if tc.setup != nil {
+				tc.setup()
+			}
 			res, err := commands.CommitTree(tc.args)
 			require.NotNil(t, err)
 			require.Equal(t, tc.expected, err.Error())

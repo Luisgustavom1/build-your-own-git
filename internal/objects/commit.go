@@ -27,9 +27,13 @@ func NewCommitObject(treeHash, parentHash, message string) CommitObject {
 	z, _ := Now.Zone()
 
 	headers := fmt.Sprintf("tree %s", treeHash)
+	var parent string
+	if parentHash != "" {
+		parent = fmt.Sprintf("parent %s\n", parentHash)
+	}
 	author := fmt.Sprintf("author %s <%s> %d %s", GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL, seconds, z)
 	committer := fmt.Sprintf("committer %s <%s> %d %s", GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL, seconds, z)
-	data := fmt.Sprintf("%s\n%s\n%s\n\n%s\n", headers, author, committer, message)
+	data := fmt.Sprintf("%s\n%s%s\n%s\n\n%s\n", headers, parent, author, committer, message)
 	content := fmt.Sprintf("commit %d\x00%s", len(data), data)
 
 	return CommitObject{

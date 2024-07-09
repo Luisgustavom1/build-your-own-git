@@ -6,6 +6,9 @@ import (
 	"github.com/Luisgustavom1/build-your-own-git/internal/objects"
 )
 
+// TODO: remove this workaround
+var SHOULD_VALIDATE_TREE_HASH = true
+
 func CommitTree(args []string) (string, error) {
 	if len(args) < 1 {
 		return "", fmt.Errorf("No tree hash provided")
@@ -42,16 +45,36 @@ func CommitTree(args []string) (string, error) {
 
 	treeHash := args[0]
 
-	if !objects.RepoCheckObjectId(treeHash) {
+	if SHOULD_VALIDATE_TREE_HASH && !objects.RepoCheckObjectId(treeHash) {
 		return "", fmt.Errorf("fatal: not a valid object name %s", treeHash)
 	}
 
-	commitObject := objects.NewCommitObject(treeHash, parentHash, message)
+	if err := validateParent(parentHash); err != nil {
+		return "", err
+	}
 
+	commitObject := objects.NewCommitObject(treeHash, parentHash, message)
 	err := objects.SaveObject(commitObject.CommonObject)
 	if err != nil {
 		return "", fmt.Errorf("Error saving object -> %s", err)
 	}
 
 	return commitObject.Hash, nil
+}
+
+func validateParent(parentHash string) error {
+	if parentHash == "" {
+		return nil
+	}
+
+	if !objects.RepoCheckObjectId(parentHash) {
+		return fmt.Errorf("fatal: not a valid object name %s", parentHash)
+	}
+
+	parentObject := objects.NewCommonObjectFromHash(parentHash)
+	if parentObject.Type != objects.Commit {
+		return fmt.Errorf("fatal: %s is not a valid 'commit' object", parentHash)
+	}
+
+	return nil
 }
