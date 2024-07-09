@@ -3,6 +3,8 @@ package objects
 import (
 	"bytes"
 	"compress/zlib"
+	"crypto/sha1"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"os"
@@ -21,15 +23,16 @@ const (
 )
 
 type CommonObject struct {
-	Type    ObjectType `json:"type"`
-	Size    int        `json:"size"`
-	Content string     `json:"content"`
-	Data    string     `json:"data"`
-	Hash    string     `json:"hash"`
+	Type ObjectType `json:"type"`
+	Size int        `json:"size"`
+	Hash string     `json:"hash"`
+	// TODO: review this, maybe Data and Content can be merged
+	Data    string `json:"data"`
+	Content string `json:"content"`
 }
 
 func NewCommonObjectFromHash(hash string) CommonObject {
-	content, err := readObjectContent(hash)
+	content, err := RepoGetObject(hash)
 	if err != nil {
 		panic(fmt.Errorf("Error reading object -> %s\n", err))
 	}
@@ -61,8 +64,13 @@ func ParseCommonObject(blob string) CommonObject {
 	return c
 }
 
-func readObjectContent(object string) ([]byte, error) {
-	return os.ReadFile(path.Join(".git/objects", object[:2], object[2:]))
+func RepoGetObject(name string) ([]byte, error) {
+	return os.ReadFile(path.Join(".git/objects", name[:2], name[2:]))
+}
+
+func RepoCheckObjectId(name string) bool {
+	_, err := os.Stat(path.Join(".git/objects", name[:2], name[2:]))
+	return err == nil
 }
 
 func uncompressObjectContent(content []byte) (string, error) {
@@ -99,4 +107,10 @@ func SaveObject(obj CommonObject) error {
 	}
 
 	return nil
+}
+
+func CreateObjectHash(blob []byte) string {
+	h := sha1.Sum(blob)
+	hash := hex.EncodeToString(h[:])
+	return hash
 }
