@@ -17,6 +17,11 @@ const GIT_AUTHOR_NAME = "Author Name"
 
 var Now = time.Now()
 
+func ParseCommitObject(object CommonObject) CommitObject {
+	commit := CommitObject{CommonObject: object}
+	return commit
+}
+
 func NewCommitObject(treeHash, parentHash, message string) CommitObject {
 	seconds := Now.Unix()
 	z, _ := Now.Zone()
@@ -39,4 +44,8 @@ func NewCommitObject(treeHash, parentHash, message string) CommitObject {
 		ParentHash: parentHash,
 		Message:    message,
 	}
+}
+
+func (c CommitObject) String() string {
+	return c.CommonObject.Data
 }

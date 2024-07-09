@@ -27,7 +27,8 @@ func CatFile(args []string) (string, error) {
 			return tree.String(objects.TreeStringOpts{}), nil
 		}
 		if common.Type == objects.Commit {
-			return common.Data, nil
+			commit := objects.ParseCommitObject(common)
+			return commit.String(), nil
 		}
 		blob := objects.ParseBlobObject(common)
 		return blob.String(), nil

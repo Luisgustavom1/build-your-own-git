@@ -8,6 +8,11 @@ type BlobObject struct {
 	CommonObject
 }
 
+func ParseBlobObject(object CommonObject) BlobObject {
+	blob := BlobObject{CommonObject: object}
+	return blob
+}
+
 func NewBlobObject(data []byte) BlobObject {
 	blob := fmt.Sprintf("blob %d\000%s", len(data), data)
 	hash := CreateObjectHash([]byte(blob))
@@ -20,9 +25,4 @@ func NewBlobObject(data []byte) BlobObject {
 
 func (b BlobObject) String() string {
 	return b.CommonObject.Data
-}
-
-func ParseBlobObject(object CommonObject) BlobObject {
-	blob := BlobObject{CommonObject: object}
-	return blob
 }
