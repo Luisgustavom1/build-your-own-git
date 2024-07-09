@@ -22,6 +22,7 @@ func ParseCommitObject(object CommonObject) CommitObject {
 	return commit
 }
 
+// TODO: refactor this
 func NewCommitObject(treeHash, parentHash, message string) CommitObject {
 	seconds := Now.Unix()
 	z, _ := Now.Zone()

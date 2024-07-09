@@ -38,7 +38,7 @@ func TestHashObject(t *testing.T) {
 
 			res, err := commands.HashObject(args)
 			require.NoError(t, err)
-			require.Equal(t, fmt.Sprintln(tc.expectedHash), res)
+			require.Equal(t, tc.expectedHash, res)
 
 			objectPath := path.Join(".git/objects", tc.expectedHash[:2])
 			_, err = os.Stat(objectPath)

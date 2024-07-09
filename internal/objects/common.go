@@ -87,6 +87,10 @@ func uncompressObjectContent(content []byte) (string, error) {
 }
 
 func SaveObject(obj CommonObject) error {
+	if _, err := os.Stat(".git"); os.IsNotExist(err) {
+		return fmt.Errorf("fatal: not a git repository (or any of the parent directories): .git\n")
+	}
+
 	sha1_hash := obj.Hash
 	objectPath := path.Join(".git/objects", string(sha1_hash[:2]))
 	objectFile := sha1_hash[2:]

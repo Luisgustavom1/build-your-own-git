@@ -28,7 +28,7 @@ func HashObject(args []string) (string, error) {
 			return "", fmt.Errorf("Error saving object -> %s\n", err)
 		}
 
-		return fmt.Sprintln(blobObject.Hash), nil
+		return blobObject.Hash, nil
 	default:
 		return "", fmt.Errorf("Unknown flag %s\n", flag)
 	}

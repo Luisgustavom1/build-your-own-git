@@ -45,11 +45,11 @@ func CommitTree(args []string) (string, error) {
 
 	treeHash := args[0]
 
-	if SHOULD_VALIDATE_TREE_HASH && !objects.RepoCheckObjectId(treeHash) {
-		return "", fmt.Errorf("fatal: not a valid object name %s", treeHash)
+	if err := validateTreeObj(treeHash); err != nil {
+		return "", err
 	}
 
-	if err := validateParent(parentHash); err != nil {
+	if err := validateParentObj(parentHash); err != nil {
 		return "", err
 	}
 
@@ -62,18 +62,39 @@ func CommitTree(args []string) (string, error) {
 	return commitObject.Hash, nil
 }
 
-func validateParent(parentHash string) error {
-	if parentHash == "" {
+func validateTreeObj(hash string) error {
+	if !SHOULD_VALIDATE_TREE_HASH {
 		return nil
 	}
 
-	if !objects.RepoCheckObjectId(parentHash) {
-		return fmt.Errorf("fatal: not a valid object name %s", parentHash)
+	if hash == "" {
+		return fmt.Errorf("No tree hash provided")
 	}
 
-	parentObject := objects.NewCommonObjectFromHash(parentHash)
+	if !objects.RepoCheckObjectId(hash) {
+		return fmt.Errorf("fatal: not a valid object name %s", hash)
+	}
+
+	treeObject := objects.NewCommonObjectFromHash(hash)
+	if treeObject.Type != objects.Tree {
+		return fmt.Errorf("fatal: %s is not a valid 'tree' object", hash)
+	}
+
+	return nil
+}
+
+func validateParentObj(hash string) error {
+	if hash == "" {
+		return nil
+	}
+
+	if !objects.RepoCheckObjectId(hash) {
+		return fmt.Errorf("fatal: not a valid object name %s", hash)
+	}
+
+	parentObject := objects.NewCommonObjectFromHash(hash)
 	if parentObject.Type != objects.Commit {
-		return fmt.Errorf("fatal: %s is not a valid 'commit' object", parentHash)
+		return fmt.Errorf("fatal: %s is not a valid 'commit' object", hash)
 	}
 
 	return nil

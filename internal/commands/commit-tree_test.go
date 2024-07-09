@@ -103,7 +103,7 @@ func TestCommitTree(t *testing.T) {
 		}))
 	})
 
-	t.Run("error when parent hash not is a commit object", func(t *testing.T) {
+	t.Run("error when parent hash is not a commit object", func(t *testing.T) {
 		dir, err := test_utils.GitInitSetup(t)
 		defer func() {
 			os.Chdir("../..")
@@ -120,6 +120,26 @@ func TestCommitTree(t *testing.T) {
 		commitHash, err := commands.CommitTree([]string{treeHash, "-p", treeHash, "-m", "my commit"})
 		require.Equal(t, "", commitHash)
 		require.Equal(t, "fatal: "+treeHash+" is not a valid 'commit' object", err.Error())
+	})
+
+	t.Run("error when tree hash is not a tree object", func(t *testing.T) {
+		dir, err := test_utils.GitInitSetup(t)
+		defer func() {
+			os.Chdir("../..")
+			os.RemoveAll(dir)
+		}()
+		require.NoError(t, err)
+
+		f := "my_blob_object.txt"
+		err = os.WriteFile(f, []byte("I am not a tree object"), 0644)
+		require.NoError(t, err)
+
+		blobHash, err := commands.HashObject([]string{"-w", f})
+		require.NoError(t, err)
+
+		commitHash, err := commands.CommitTree([]string{blobHash, "-m", "my commit"})
+		require.Equal(t, "", commitHash)
+		require.Equal(t, "fatal: "+blobHash+" is not a valid 'tree' object", err.Error())
 	})
 }
 
