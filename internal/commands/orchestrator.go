@@ -22,6 +22,8 @@ func Orchestrator(args []string) {
 		res, err = LsTree(args)
 	case "commit-tree":
 		res, err = CommitTree(args)
+	case "clone":
+		res, err = Clone(args)
 	default:
 		err = fmt.Errorf("Unknown command %s\n", command)
 	}
