@@ -8,14 +8,10 @@ import (
 	"strings"
 )
 
-func pktLine(command string, objID string, capabilities []string) string {
-	capabilityList := strings.Join(capabilities, " ")
-	line := fmt.Sprintf("%s %s %s", command, objID, capabilityList)
-
-	totalLength := len(line) + 4
-	hexLength := fmt.Sprintf("%04x", totalLength)
-
-	return hexLength + line
+func pktLine(data string) string {
+	str := data + "\x00"
+	length := len(str) + 4
+	return fmt.Sprintf("%04x%s", length, str)
 }
 
 func Clone(args []string) (string, error) {
@@ -51,17 +47,15 @@ func Clone(args []string) (string, error) {
 		parts := strings.Split(ref, " ")[0] // size+hash
 		hash := parts[len(parts)-40:]       // remove size
 
-		capabilities := []string{}
+		capabilities := ""
 		if i == 0 {
-			capabilities = append(capabilities, "multi_ack_detailed",
-				"side-band-64k",
-				"agent=git/2.43.0")
+			capabilities = "\x00multi_ack_detailed side-band-64k agent=mygit/1.0"
 		}
 
-		body += pktLine("want", hash, capabilities) + "\n"
+		body += pktLine(fmt.Sprintf("want %s%s", hash, capabilities))
 	}
 
-	body += "0009done\n"
+	body += pktLine("done")
 	body += "0000"
 
 	req, err = http.NewRequest(http.MethodPost, url+"/git-upload-pack", strings.NewReader(body))
@@ -69,6 +63,9 @@ func Clone(args []string) (string, error) {
 		fmt.Printf("could not perform git-upload-pack: %s\n", err)
 		os.Exit(1)
 	}
+
+	req.Header.Set("Content-Type", "application/x-git-upload-pack-request")
+	req.Header.Set("Accept", "application/x-git-upload-pack-result")
 
 	res, err = http.DefaultClient.Do(req)
 	if err != nil {
